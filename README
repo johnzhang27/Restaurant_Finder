@@ -1,0 +1,83 @@
+Name: YongQuan Zhang
+ID #: 1515873
+CMPUT 275 Winter20
+
+Assignment 1 part 2: Restaurant Finder
+
+
+Included Files:
+
+	- a1part1.cpp: Contains the 22 functions.
+
+	- lcd_image.cpp
+
+	- lcd_image.h
+
+	- Makefile
+
+	- README
+
+Accessorise:
+	* 1 Arduino Mega Board(AMG)
+	* USB cable
+	* touchscreen
+	* A custome SD card provided by instructor
+	* A breadboard
+	* 7 wires
+	* A joysticker
+
+Wiring instructions: 
+	Touchscreen connect with Arduino Mega Board(insert left side of the touchscreen from Pin 3.3V to
+	Pin A5. Insert the right side of the touchscreen from Pin AREF to Pin RX0<-0.
+	Arduino's Pin A8 <--> VRy of joystick.
+	Arduino's Pin A9 <--> VRx of joystick.
+	Arduino's Pin 5v <--> "+" on breadboard <--> +5V on joystick.
+	Arduino's Pin GND <--> "-" on breadboard <--> GND on joystick.
+	Arduino's Pin 53 <--> SW on joystick.
+	Insert the SD card into touchscreen.
+
+
+Running the code:
+You should put a1part1.cpp into a file that contains 
+- Makefile
+- lcd_image.cpp
+- lcd_image.h
+1. Connect Arduino Mega Boards and other necessary parts of this exercise.
+
+2. Go to the terminal and type "make", then "make upload" to upload the made file to Arduino Mega Board.
+Then check the display when you touch the tft screen or move the joysticker.
+
+Notes and Assumptions:
+	a1part1.cpp: Contains the 22 functions:
+
+NOTE(IMPORTNANT!): DO NOT press the joysticker right after the map been redrawed!!! If you wait 0.5 second(500ms), everthing will be OK. But if you press it right away, highlightedstring, count and totalresnum will not be reset for some unknown reason. I added several code to reset those number to zero again when redraw the list(line 654-656). But to be safe, DO NOT press joysticker right after map been redrawed.
+
+-setup() doesn't have argument and return nothing(None).
+
+-void getRestaurantFast(int restIndex, restaurant* restPtr) will get all 1066 restaurants without getting a block each time. The function will check if the block number is same as previous one then decide to get a new block or not.
+
+-int processTOUCHSCREEN(),
+void SLOWwriteonTOUCHSCREEN(uint32_t time_slow2, uint32_t A_slow),
+and void FASTwriteonTOUCHSCREEN(uint32_t time_fast2, uint32_t A_fast) will help to change the display on tft. This function will handle all the edge cases and when you moving the the edge of the map, arduino will reprint the next patch of map.
+
+-void swap(RestDist *rest_dist1, RestDist *rest_dist2) has 2 arguments which is the pointer to the RestDist structure type data. This function is used to swap two elements in RestDist structure(The structure stores multiple type of variable).
+
+-void isort(RestDist *rest_dist,int n) is from the assignment description pseudocode. It used as a sorting tool in par1t.
+
+-void qsort(RestDist *array,int n) is from the pseudocode on lecture slides. It is a recursion function that would call pivot() function several times until the array been sorted.
+
+void Nextlist() is used when we want to move to the next page of list. It has 2 extrme case: 1. when we at the 1st restaurant of the 1st page and we trying to move up, then it will move to the end of the list which is the last restaurant on the last page. 2. When we are at the the last restaurant of the last page and trying to move down, it will move to the 1st restaurant of the 1st page.
+
+-void HIGHLIGHT(int res_index, char res_name[]) is a function that could highlight the selected line and change the previous highlighed line to normal.
+
+
+-void joyScrollList() is a function that could be used to determine which line should be highlighted. Inside this function we are keeping calling HIGHLIGHT() function so we could update the line we want.
+NOTE: for the condition of the else if statement, I used yVal < JOY_CENTER - 100 because my joysticker is not accurate. When you don't touch it the yVal is 428 and it is out of the range of the JOY_CENTER - JOY_DEADZONE(512 - 64). You could change 100 to JOY_DEADZONE if your joysticker works correctly.
+
+-void draw_restaurant_dot() has no argument and return nothing. Inside this function we re-fetch all restaurant again and compare its actual x,y coordinates with current display width and height to identify if the restaurant is on the current patch of map or not.
+
+
+-void locate_selected_restaurant() has no argument and no return. In this function we dealed with the case that the restaurant is out of the big map and what we did is we jsut reset its coordinates to the nearst location.
+
+-main() is needed to excute other functions. In main function, we could split mode1 and mode2 into different functions, but I found out when I do that and print the restaurant name(or distance) on the  serial monitor, those names become weird sympols. So I just keep it like this way.
+
